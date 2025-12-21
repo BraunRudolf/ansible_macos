@@ -47,6 +47,6 @@ ansible-galaxy collection install community.general
 
 # 5. Run the Playbook
 echo "[RUN] Executing Ansible Playbook..."
-ansible-playbook bootstrap.yml --ask-become-pass
+ansible-playbook main.yml --ask-become-pass
 
 echo "--- Bootstrap Complete ---"

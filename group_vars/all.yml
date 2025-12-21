@@ -10,7 +10,7 @@ setup_brew:
     - nvim
     - stow
   cask:
-    - aerospace
+    - nikitabobko/tap/aerospace
     - iterm2
     - betterdisplay
     - brave-browser

@@ -21,7 +21,7 @@
         state: present
         update_homebrew: yes
       environment:
-        PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+        PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_facts['env']['PATH'] }}"
 
     # 3. Install Brew Casks
     - name: Install Homebrew casks
@@ -38,7 +38,7 @@
         value: "{{ item.value }}"
       loop:
         - { key: 'autohide', type: 'bool', value: "{{ macos_settings.dock.autohide }}" }
-        - { key: 'tilesize', type: 'int', value: "{{ macos_settings.dock.tilesize }}" }
+        - { key: 'tilesize', type: 'float', value: "{{ macos_settings.dock.tilesize }}" }
         - { key: 'show-recents', type: 'bool', value: "{{ macos_settings.dock.show_recents }}" }
       notify: Restart Dock
 
@@ -81,7 +81,7 @@
 
     - name: Symlink dotfiles using Stow
       ansible.builtin.shell:
-        cmd: "stow -R -v -d {{ dotfiles.dest }}/{{ item.0.item }} -t {{ ansible_env.HOME }} {{ item.1.path | basename }}"
+        cmd: "stow -R -v -d {{ dotfiles.dest }}/{{ item.0.item }} -t {{ ansible_facts['env']['HOME'] }} {{ item.1.path | basename }}"
       loop: "{{ found_dotfiles.results | subelements('files', skip_missing=True) }}"
       register: stow_out
       # Use a list of strings for changed_when to avoid colon confusion
@@ -90,7 +90,7 @@
         - "'UNLINK' in stow_out.stderr"
       failed_when: stow_out.rc != 0
       environment:
-        PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+        PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_facts['env']['HOME'] }}"
 
   handlers:
     - name: Restart Dock

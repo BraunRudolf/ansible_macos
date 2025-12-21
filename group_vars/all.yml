@@ -3,17 +3,17 @@ user:
   email: braun.ru@outlook.de
   github_username: braunrudolf
 
-brew_bin:"/opt/homebrew/bin/brew"
+brew_bin: "/opt/homebrew/bin/brew"
 
 setup_brew:
   formulae:
     - nvim
-    -iterm2
-    -stow
+    - stow
   cask:
     - aerospace
+    - iterm2
     - betterdisplay
-    - brave-browswer
+    - brave-browser
     - makemkv
     - utm
     - discord
@@ -31,8 +31,8 @@ macos_settings:
     show_path_bar: true
 
 dotfiles:
-  repo: "https://github.com/braunrudolf/dotfiles.git"
-  dest: "{{ ansible_env.HOME }}/.dotfiles"
+  repo: "https://github.com/BraunRudolf/.dotfiles.git"
+  dest: "{{ ansible_facts['env']['HOME'] }}/.dotfiles"
   subdirs:
     - common
     - macos

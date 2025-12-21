@@ -1,0 +1,42 @@
+user:
+  name: Rudolf Braun-Lee
+  email: braun.ru@outlook.de
+  github_username: braunrudolf
+
+brew_bin:"/opt/homebrew/bin/brew"
+
+setup_brew:
+  formulae:
+    - nvim
+    -iterm2
+    -stow
+  cask:
+    - aerospace
+    - betterdisplay
+    - brave-browswer
+    - makemkv
+    - utm
+    - discord
+    - whatsapp
+    - obsidian
+
+macos_settings:
+  dock:
+    autohide: true
+    tilesize: 48
+    show_recents: false
+  finder:
+    show_all_extensions: true
+    default_view_style: "clmv" # Column view
+    show_path_bar: true
+
+dotfiles:
+  repo: "https://github.com/braunrudolf/dotfiles.git"
+  dest: "{{ ansible_env.HOME }}/.dotfiles"
+  subdirs:
+    - common
+    - macos
+  config_destination: "{{ ansible_env.HOME }}/.config"
+features:
+  install_oh_my_zsh: true
+  configure_git: true

@@ -1,0 +1,96 @@
+---
+- name: Setup macOS Environment
+  hosts: localhost
+  connection: local
+  
+  tasks:
+    # 1. Install Homebrew (Better check logic)
+    - name: Ensure Homebrew is installed
+      stat:
+        path: "{{ brew_bin }}"
+      register: brew_check
+
+    - name: Install Homebrew if missing
+      shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      when: not brew_check.stat.exists
+
+    # 2. Install Brew Formulae
+    - name: Install Homebrew formulae
+      community.general.homebrew:
+        name: "{{ setup_brew.formulae }}"
+        state: present
+        update_homebrew: yes
+      environment:
+        PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+
+    # 3. Install Brew Casks
+    - name: Install Homebrew casks
+      community.general.homebrew_cask:
+        name: "{{ setup_brew.cask }}"
+        state: present
+
+    # 4. Configure MacOS Settings (Dock)
+    - name: Configure MacOS Dock
+      community.general.osx_defaults:
+        domain: com.apple.dock
+        key: "{{ item.key }}"
+        type: "{{ item.type }}"
+        value: "{{ item.value }}"
+      loop:
+        - { key: 'autohide', type: 'bool', value: "{{ macos_settings.dock.autohide }}" }
+        - { key: 'tilesize', type: 'int', value: "{{ macos_settings.dock.tilesize }}" }
+        - { key: 'show-recents', type: 'bool', value: "{{ macos_settings.dock.show_recents }}" }
+      notify: Restart Dock
+
+    # 5. Configure Git
+    - name: Configure Git Global User
+      community.general.git_config:
+        name: user.name
+        scope: global
+        value: "{{ user.name }}"
+      when: features.configure_git
+
+    - name: Configure Git Global Email
+      community.general.git_config:
+        name: user.email
+        scope: global
+        value: "{{ user.email }}"
+      when: features.configure_git
+
+    - name: Clone dotfiles repository
+      ansible.builtin.git:
+        repo: "{{ dotfiles.repo }}"
+        dest: "{{ dotfiles.dest }}"
+        recursive: yes
+        update: yes
+      accept_hostkey: yes
+
+    - name: Ensure .config directory exists
+      ansible.builtin.file:
+        path: "{{ dotfiles.config_destination }}"
+        state: directory
+        mode: '0755'
+
+    - name: Find all app folders in dotfiles subdirs
+      ansible.builtin.find:
+        paths: "{{ dotfiles.dest }}/{{ item }}"
+        file_type: directory
+        recurse: no
+      loop: "{{ dotfiles.subdirs }}"
+      register: found_dotfiles
+
+    - name: Symlink dotfiles using Stow (Optimized)
+      ansible.builtin.shell:
+        cmd: "stow -R -v -d {{ dotfiles.dest }}/{{ item.0.item }} -t {{ ansible_env.HOME }} {{ item.1.path | basename }}"
+      loop: "{{ found_dotfiles.results | subelements('files', skip_missing=True) }}"
+      register: stow_out
+      changed_when: 
+        - "'LINK' in stow_out.stderr"
+        - "'UNLINK' in stow_out.stderr"
+      failed_when: stow_out.rc != 0
+      environment:
+        PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+
+  handlers:
+    - name: Restart Dock
+      shell: killall Dock

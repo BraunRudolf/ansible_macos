@@ -63,7 +63,7 @@
         dest: "{{ dotfiles.dest }}"
         recursive: yes
         update: yes
-      accept_hostkey: yes
+        accept_hostkey: yes
 
     - name: Ensure .config directory exists
       ansible.builtin.file:

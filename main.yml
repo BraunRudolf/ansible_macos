@@ -4,7 +4,6 @@
   connection: local
 
   tasks:
-    # 1. Install Homebrew
     - name: Ensure Homebrew is installed
       ansible.builtin.stat:
         path: "{{ brew_bin }}"
@@ -14,7 +13,6 @@
       ansible.builtin.shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
       when: not brew_check.stat.exists
 
-    # 2. Install Brew Formulae
     - name: Install Homebrew formulae
       community.general.homebrew:
         name: "{{ setup_brew.formulae }}"
@@ -23,13 +21,12 @@
       environment:
         PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_facts['env']['PATH'] }}"
 
-    # 3. Install Brew Casks
     - name: Install Homebrew casks
       community.general.homebrew_cask:
         name: "{{ setup_brew.cask }}"
         state: present
+        install_options: "no-quarantine"
 
-    # 4. Configure MacOS Settings (Dock)
     - name: Configure MacOS Dock
       community.general.osx_defaults:
         domain: com.apple.dock
@@ -42,7 +39,6 @@
         - { key: 'show-recents', type: 'bool', value: "{{ macos_settings.dock.show_recents }}" }
       notify: Restart Dock
 
-    # 5. Configure Git
     - name: Configure Git Global User
       community.general.git_config:
         name: user.name
@@ -84,7 +80,6 @@
         cmd: "stow -R -v -d {{ dotfiles.dest }}/{{ item.0.item }} -t {{ ansible_facts['env']['HOME'] }} {{ item.1.path | basename }}"
       loop: "{{ found_dotfiles.results | subelements('files', skip_missing=True) }}"
       register: stow_out
-      # Use a list of strings for changed_when to avoid colon confusion
       changed_when:
         - "'LINK' in stow_out.stderr"
         - "'UNLINK' in stow_out.stderr"

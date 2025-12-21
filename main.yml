@@ -2,16 +2,16 @@
 - name: Setup macOS Environment
   hosts: localhost
   connection: local
-  
+
   tasks:
-    # 1. Install Homebrew (Better check logic)
+    # 1. Install Homebrew
     - name: Ensure Homebrew is installed
-      stat:
+      ansible.builtin.stat:
         path: "{{ brew_bin }}"
       register: brew_check
 
     - name: Install Homebrew if missing
-      shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      ansible.builtin.shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
       when: not brew_check.stat.exists
 
     # 2. Install Brew Formulae
@@ -79,12 +79,13 @@
       loop: "{{ dotfiles.subdirs }}"
       register: found_dotfiles
 
-    - name: Symlink dotfiles using Stow (Optimized)
+    - name: Symlink dotfiles using Stow
       ansible.builtin.shell:
         cmd: "stow -R -v -d {{ dotfiles.dest }}/{{ item.0.item }} -t {{ ansible_env.HOME }} {{ item.1.path | basename }}"
       loop: "{{ found_dotfiles.results | subelements('files', skip_missing=True) }}"
       register: stow_out
-      changed_when: 
+      # Use a list of strings for changed_when to avoid colon confusion
+      changed_when:
         - "'LINK' in stow_out.stderr"
         - "'UNLINK' in stow_out.stderr"
       failed_when: stow_out.rc != 0
@@ -93,4 +94,4 @@
 
   handlers:
     - name: Restart Dock
-      shell: killall Dock
+      ansible.builtin.shell: killall Dock

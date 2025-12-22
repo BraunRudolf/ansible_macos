@@ -14,7 +14,7 @@ setup_brew:
     - ripgrep
     - make
     - gcc
-    - fd-find
+    - fd
 
   cask:
     - nikitabobko/tap/aerospace

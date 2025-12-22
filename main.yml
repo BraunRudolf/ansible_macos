@@ -53,13 +53,19 @@
         value: "{{ user.email }}"
       when: features.configure_git
 
-    - name: Clone dotfiles repository
+    - name: Check if dotfiles exists
+      ansible.builtin.stat:
+        path: "{{ dotfiles.dest }}"
+      register: dotfiles_check
+
+    - name: Clone dotfiles repository if missing
       ansible.builtin.git:
         repo: "{{ dotfiles.repo }}"
         dest: "{{ dotfiles.dest }}"
         recursive: yes
         update: yes
         accept_hostkey: yes
+      when: not brew_check.stat.exists
 
     - name: Ensure .config directory exists
       ansible.builtin.file:

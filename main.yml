@@ -92,9 +92,18 @@
       failed_when: stow_out.rc != 0
       environment:
         PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_facts['env']['HOME'] }}"
-    - name: Install zap
+
+    - name: Download Zap installer
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh
+        dest: /tmp/zap_install.zsh
+        mode: '0755'
+
+    - name: Execute Zap installer
       ansible.builtin.shell:
-        cmd: "zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1 --keep"
+        cmd: "/tmp/zap_install.zsh --branch release-v1 --keep"
+        creates: "~/.local/share/zap"
+        executable: /bin/zsh
 
   handlers:
     - name: Restart Dock

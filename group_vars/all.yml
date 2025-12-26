@@ -27,6 +27,7 @@ setup_brew:
     - discord
     - whatsapp
     - obsidian
+    - font-comic-shanns-mono-nerd-font
 
 macos_settings:
   dock:

@@ -65,7 +65,7 @@
         recursive: yes
         update: yes
         accept_hostkey: yes
-      when: not brew_check.stat.exists
+      when: not dotfiles_check
 
     - name: Ensure .config directory exists
       ansible.builtin.file:

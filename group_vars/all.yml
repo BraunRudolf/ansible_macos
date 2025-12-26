@@ -44,7 +44,7 @@ dotfiles:
   subdirs:
     - common
     - macos
-  config_destination: "{{ ansible_env.HOME }}/.config"
+  config_destination: "{{ ansible_facts['env']['HOME'] }}/.config"
 features:
   install_oh_my_zsh: true
   configure_git: true

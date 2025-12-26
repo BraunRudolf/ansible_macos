@@ -94,7 +94,7 @@
         PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_facts['env']['HOME'] }}"
     - name: Install zap
       ansible.builtin.shell:
-        cmd: zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1 --keep
+        cmd: "zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1 --keep"
 
   handlers:
     - name: Restart Dock

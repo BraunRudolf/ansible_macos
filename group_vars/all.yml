@@ -28,11 +28,12 @@ setup_brew:
     - whatsapp
     - obsidian
     - font-comic-shanns-mono-nerd-font
+    - teamspeak-client
 
 macos_settings:
   dock:
     autohide: true
-    tilesize: 48
+    tilesize: 35
     show_recents: false
   finder:
     show_all_extensions: true

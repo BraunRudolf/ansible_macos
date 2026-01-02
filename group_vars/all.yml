@@ -29,6 +29,11 @@ setup_brew:
     - obsidian
     - font-comic-shanns-mono-nerd-font
     - teamspeak-client
+    - proton-pass
+    - protonvpn
+    - proton-mail
+
+    
 
 macos_settings:
   dock:

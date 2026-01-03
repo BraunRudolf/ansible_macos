@@ -32,8 +32,7 @@ setup_brew:
     - proton-pass
     - protonvpn
     - proton-mail
-
-    
+    - prusaslicer
 
 macos_settings:
   dock:
